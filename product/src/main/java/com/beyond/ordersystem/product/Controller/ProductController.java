@@ -6,6 +6,7 @@ import com.beyond.ordersystem.product.domain.Product;
 import com.beyond.ordersystem.product.dto.ProductResDto;
 import com.beyond.ordersystem.product.dto.ProductSaveReqDto;
 import com.beyond.ordersystem.product.dto.ProductSearchDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
+@Slf4j
 @RestController
 //@RequestMapping("/ordersystem/product")
 public class ProductController {
@@ -32,6 +33,7 @@ public class ProductController {
     @PostMapping("product/create")
     // 둘다 json으로 받고 싶으면 @RequestPart ProductSaveReqDto dto, @RequestPart MultipartFile productImage
     public ResponseEntity<Object> registerProduct(@ModelAttribute ProductSaveReqDto dto){ // multipart form data형식으로 받음
+        System.out.println("dto:"+ dto);
         Product product = productService.productAwsCreate(dto);
         // body에 들어가는 HttpStatus상태
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "product등록 성공", product.getId());
