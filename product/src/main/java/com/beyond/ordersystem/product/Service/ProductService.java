@@ -5,6 +5,8 @@ import com.beyond.ordersystem.product.domain.Product;
 import com.beyond.ordersystem.product.dto.ProductResDto;
 import com.beyond.ordersystem.product.dto.ProductSaveReqDto;
 import com.beyond.ordersystem.product.dto.ProductSearchDto;
+import com.beyond.ordersystem.product.dto.ProductUpdateStockDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -29,7 +32,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -136,5 +138,28 @@ public class ProductService {
         return productResDtos;
     }
 
+    public ProductResDto productDetail(Long id){
+        return productRepository.findById(id)
+                .orElseThrow(()->new EntityNotFoundException("id에 해당하는 상품이 없습니다."))
+                .fromEntity();
+    }
+
+    public Product productUpdateStock(ProductUpdateStockDto dto){
+        Product product = productRepository.findById(dto.getProductId()).orElseThrow(()-> new EntityNotFoundException("상품없음"));
+        product.updateStockQuantity(dto.getProductQuantity());
+        return product;
+    }
+
+//    @KafkaListener(topics = "product-update-topic", groupId = "order-group", containerFactory = "kafkaListenerContainerFactory")
+//        public void consumerProductQuantity(String message){
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            ProductUpdateStockDto productUpdateStockDto = objectMapper.readValue(message, ProductUpdateStockDto.class);
+//            System.out.println(productUpdateStockDto);
+//            this.productUpdateStock(productUpdateStockDto);
+//        } catch (JsonProcessingException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
 }

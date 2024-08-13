@@ -26,7 +26,7 @@ public class OrderingController {
 
     @PostMapping("order/create")
     public ResponseEntity<Object> orderingCreate (@RequestBody List<OrderingSaveReqDto> dto){
-        Ordering ordering = orderingService.orderCreate(dto);
+        Ordering ordering = orderingService.orderFeignClientCreate(dto);
         // 엔티티그대로 return할 경우 순환참조에 빠질수있음(OneToMany, ManyToOne 관계걸려있는 경우)
         // 엔티티 그대로 return하고 싶다면 createResDto 만들어서 리턴할 것.
         CommonResDto commonResDto = new CommonResDto(HttpStatus.CREATED, "정상완료", ordering.getId());
